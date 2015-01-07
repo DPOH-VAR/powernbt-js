@@ -8,7 +8,7 @@ powernbt-js is simple javascript NBT library.
 * Install powernbt-js
 
 ```bash
-$ npm install powernbt
+$ npm install powernbt-js
 ```
 
 * Include libraries to your index.html:
@@ -26,5 +26,5 @@ Web NBT editor: http://varscript.ru/NBT
 
 ## Documentation
 
-See generated documentation in docs
+http://varscript.ru/NBT/docs/
 

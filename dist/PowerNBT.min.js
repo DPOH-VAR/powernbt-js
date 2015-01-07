@@ -1,6 +1,6 @@
 /**
- * powernbtjs
- * @version v1.2.0 - 2015-01-07T21:48:50.744Z
+ * powernbt-js
+ * @version v1.2.0 - 2015-01-07T22:34:37.748Z
  * @author DPOH-VAR (dpohvar@gmail.com)
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
