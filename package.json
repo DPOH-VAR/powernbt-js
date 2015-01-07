@@ -1,0 +1,20 @@
+{
+  "name": "powernbt-js",
+  "version": "1.2.0",
+  "description": "Javascript NBT library",
+  "author": {
+    "name": "DPOH-VAR",
+    "email": "dpohvar@gmail.com"
+  },
+  "main": "dest/PowerNBT.js",
+  "keywords": [
+    "NBT"
+  ],
+  "dependencies": {
+    "long": "^2.2.3"
+  },
+  "preferGlobal": true,
+  "private": false,
+  "analyze": true,
+  "license": "MIT"
+}

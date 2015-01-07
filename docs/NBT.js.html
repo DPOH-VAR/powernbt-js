@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: NBT.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: NBT.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/** import dcodeIO.Long as Long */
+var Long;
+if (typeof require === "function") {
+    Long = require('long');
+} else {
+    Long = global.dcodeIO.Long;
+}
+
+function extend(child, parent) {
+    for ( var key in parent ) if ( parent.hasOwnProperty(key) ){
+        child[key] = parent[key];
+    }
+    child.prototype = Object.create( parent.prototype, {
+        constructor: { value: child }
+    });
+}
+
+/**
+ * NBT namespace
+ *
+ * @namespace NBT
+ * @type {Object}
+ */
+var NBT = {};
+
+/**
+ * Read binary data to NBT tag
+ *
+ * @memberOf NBT
+ * @param {NBT~InputStream|ArrayBuffer|Int8Array|Uint8Array} data Binary data
+ * @param {number=} type If specified, skip type and name of tag
+ * @returns {NBT.NBTBase} new nbt tag
+ */
+NBT.readTag = function(data, type){
+    var inputStream;
+    if ( data instanceof InputStream ) inputStream = data;
+    else inputStream = new InputStream( data );
+    var name = "";
+    if ( type == undefined ) {
+        type = inputStream.readInt8();
+        if ( type == NBT.Type.TAG_END ) {
+            return new NBT.NBTTagEnd();
+        }
+        var nameLength = inputStream.readInt16();
+        var nameData = inputStream.read( nameLength );
+        var nameArray = new Int8Array( nameData );
+        name = Utf8Utils.decode( nameArray );
+    }
+
+    switch ( type ) {
+        case NBT.Type.TAG_BYTE:
+            return new NBT.NBTTagByte( inputStream.read(1), name );
+        case NBT.Type.TAG_SHORT:
+            return new NBT.NBTTagShort( inputStream.read(2), name );
+        case NBT.Type.TAG_INT:
+            return new NBT.NBTTagInt( inputStream.read(4), name );
+        case NBT.Type.TAG_LONG:
+            return new NBT.NBTTagLong( inputStream.read(8), name );
+        case NBT.Type.TAG_FLOAT:
+            return new NBT.NBTTagFloat( inputStream.read(4), name );
+        case NBT.Type.TAG_DOUBLE:
+            return new NBT.NBTTagDouble( inputStream.read(8), name );
+        case NBT.Type.TAG_BYTE_ARRAY:
+            var byteArraySize = inputStream.readInt32();
+            return new NBT.NBTTagByteArray( inputStream.read(byteArraySize), name );
+        case NBT.Type.TAG_STRING:
+            var stringSize = inputStream.readInt16();
+            return new NBT.NBTTagString( inputStream.read(stringSize), name );
+        case NBT.Type.TAG_LIST:
+            /** @type {NBT.Type|number} */
+            var listType = inputStream.readInt8();
+            var listSize = inputStream.readInt32();
+            var list = [];
+            for ( var i=0; i&lt;listSize; i++ ){
+                var listTag = NBT.readTag( inputStream, listType );
+                list.push( listTag );
+            }
+            return new NBT.NBTTagList( listType, list, name );
+        case NBT.Type.TAG_COMPOUND:
+            var value = {};
+            while ( true ){
+                var compoundTag = NBT.readTag( inputStream );
+                if (compoundTag.type == NBT.Type.TAG_END) break;
+                value[compoundTag._name] = compoundTag;
+            }
+            return new NBT.NBTTagCompound( value, name );
+        case NBT.Type.TAG_INT_ARRAY:
+            var intArraySize = inputStream.readInt32();
+            return new NBT.NBTTagIntArray( inputStream.read(intArraySize*4), name );
+        default:
+            throw new Error( 'NBT parsing error: tag type: '+type );
+    }
+};
+
+if (typeof require === 'function' &amp;&amp; typeof module === 'object' &amp;&amp; module &amp;&amp; typeof exports === 'object' &amp;&amp; exports) {
+    module["exports"] = NBT;
+} else {
+    global["NBT"] = NBT;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="NBT.NBTArray.html">NBTArray</a></li><li><a href="NBT.NBTBase.html">NBTBase</a></li><li><a href="NBT.NBTNumber.html">NBTNumber</a></li><li><a href="NBT.NBTTagByte.html">NBTTagByte</a></li><li><a href="NBT.NBTTagByteArray.html">NBTTagByteArray</a></li><li><a href="NBT.NBTTagCompound.html">NBTTagCompound</a></li><li><a href="NBT.NBTTagDouble.html">NBTTagDouble</a></li><li><a href="NBT.NBTTagEnd.html">NBTTagEnd</a></li><li><a href="NBT.NBTTagFloat.html">NBTTagFloat</a></li><li><a href="NBT.NBTTagInt.html">NBTTagInt</a></li><li><a href="NBT.NBTTagIntArray.html">NBTTagIntArray</a></li><li><a href="NBT.NBTTagList.html">NBTTagList</a></li><li><a href="NBT.NBTTagLong.html">NBTTagLong</a></li><li><a href="NBT.NBTTagShort.html">NBTTagShort</a></li><li><a href="NBT.NBTTagString.html">NBTTagString</a></li><li><a href="NBT-InputStream.html">InputStream</a></li><li><a href="NBT-OutputStream.html">OutputStream</a></li></ul><h3>Namespaces</h3><ul><li><a href="NBT.html">NBT</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Jan 08 2015 02:48:53 GMT+0500 (YEKT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
